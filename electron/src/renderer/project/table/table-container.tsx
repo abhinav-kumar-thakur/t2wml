@@ -106,13 +106,9 @@ class TableContainer extends Component<{}, TableState> {
       this.setState({ mode: 'output' });
     }
   }
-
-  async handleOpenTableFile(event: ChangeEvent) {
+  async addFile(file: File){
     this.resetTableData();
-
-    // get table file
-    const file = (event.target as HTMLInputElement).files![0];
-    if (!file) { return; }
+    console.log(file)
 
     // before sending request
     wikiStore.table.showSpinner = true;
@@ -136,6 +132,19 @@ class TableContainer extends Component<{}, TableState> {
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
     }
+  }
+
+  async onDrop(files: File[]) {
+    // get table file
+    const file = files[0]
+    await this.addFile(file)
+  }
+
+  async handleOpenTableFile(event: ChangeEvent) {
+    // get table file
+    const file = (event.target as HTMLInputElement).files![0];
+    if (!file) { return; }
+    this.addFile(file)
   }
 
   resetTableData() { // ?
