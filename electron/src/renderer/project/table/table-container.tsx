@@ -3,6 +3,7 @@
 import React, { ChangeEvent, Component } from 'react';
 import * as path from 'path';
 import './table-component.css';
+import Dropzone from 'react-dropzone';
 
 import { Button, ButtonGroup, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 
@@ -106,7 +107,8 @@ class TableContainer extends Component<{}, TableState> {
       this.setState({ mode: 'output' });
     }
   }
-  async addFile(file: File){
+
+  async addFile(file: File) {
     this.resetTableData();
     console.log(file)
 
@@ -220,7 +222,7 @@ class TableContainer extends Component<{}, TableState> {
 
     this.resetTableData();
 
-    if ( mode === 'annotation' ) {
+    if (mode === 'annotation') {
       this.fetchAnnotations();
     }
 
@@ -229,11 +231,11 @@ class TableContainer extends Component<{}, TableState> {
   }
 
   async fetchAnnotations() {
-    if (!currentFilesService.currentState.mappingFile){
+    if (!currentFilesService.currentState.mappingFile) {
       //create a mapping file
-      const title = path.join("annotations", path.parse(currentFilesService.currentState.dataFile).name+"-"+currentFilesService.currentState.sheetName+".annotation");
+      const title = path.join("annotations", path.parse(currentFilesService.currentState.dataFile).name + "-" + currentFilesService.currentState.sheetName + ".annotation");
       const data = {
-        "title":title,
+        "title": title,
         "sheetName": currentFilesService.currentState.sheetName,
         "dataFile": currentFilesService.currentState.dataFile
       };
@@ -382,31 +384,38 @@ class TableContainer extends Component<{}, TableState> {
     const { multipleSheets } = this.state;
 
     return (
-      <div className="w-100 h-100 p-1">
 
-        {this.renderErrorMessage()}
+      <Dropzone onDrop={(files)=>(this.onDrop(files))}>
+        {({ getRootProps, getInputProps }) => (
+          <div className="w-100 h-100 p-1" {...getRootProps({className: 'dropzone'})}>
 
-        <Card className="w-100 h-100 shadow-sm">
+            {this.renderErrorMessage()}
 
-          <Card.Header className={"py-2 px-3"}
-            style={{ height: "40px", background: "#339966" }}>
-            {this.renderTitle()}
-            {this.renderUploadButton()}
-            {this.renderAnnotationToggle()}
-          </Card.Header>
+            <Card className="w-100 h-100 shadow-sm">
 
-          <Card.Body className="ag-theme-balham w-100 h-100 p-0">
-            {this.renderLoading()}
-            {this.renderTable()}
-            {this.renderLegend()}
-          </Card.Body>
+              <Card.Header className={"py-2 px-3"}
+                style={{ height: "40px", background: "#339966" }}>
+                {this.renderTitle()}
+                {this.renderUploadButton()}
+                {this.renderAnnotationToggle()}
+              </Card.Header>
 
-          <Card.Footer hidden={!multipleSheets} className={'p-0'}>
-            {this.renderSheetSelector()}
-          </Card.Footer>
+              <Card.Body className="ag-theme-balham w-100 h-100 p-0">
+                {this.renderLoading()}
+                {this.renderTable()}
+                {this.renderLegend()}
+              </Card.Body>
 
-        </Card>
-      </div>
+              <Card.Footer hidden={!multipleSheets} className={'p-0'}>
+                {this.renderSheetSelector()}
+              </Card.Footer>
+
+            </Card>
+          </div>
+        )}
+      </Dropzone>
+
+
     )
   }
 }
