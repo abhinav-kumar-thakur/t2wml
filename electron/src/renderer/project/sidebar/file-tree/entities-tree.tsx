@@ -17,15 +17,12 @@ interface TreeState {
   showSpinner: boolean;
 }
 
-function emptyFunc() { /* NO-OP */ }
 const entitiesNode = {
   id: "Root000001",
   label: "Entities",
   childNodes: [],
   type: "Label",
   parentNode: null,
-  rightClick: emptyFunc,
-  onClick: emptyFunc
 } as NodeProps;
 const wikifiersNode = {
   id: "Root000002",
@@ -33,8 +30,6 @@ const wikifiersNode = {
   childNodes: [],
   type: "Label",
   parentNode: null,
-  rightClick: emptyFunc,
-  onClick: emptyFunc
 } as NodeProps;
 
 

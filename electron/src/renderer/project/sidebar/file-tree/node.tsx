@@ -1,13 +1,14 @@
 
 import React, { Component } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {IconDefinition, faChevronDown, faChevronRight, faTable,  faStream, faColumns, faFile, faProjectDiagram, faList} from '@fortawesome/free-solid-svg-icons';
+import { IconDefinition, faChevronDown, faChevronRight, faTable, faStream, faColumns, faFile, faProjectDiagram, faList } from '@fortawesome/free-solid-svg-icons';
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import Dropzone from 'react-dropzone';
 import './node.css';
 
 
 export type NodeType = "DataFile" | "Sheet" | "Label" | "Yaml" | "Annotation" | "Wikifier" | "Entity"
-const nodeToIconMapping={
+const nodeToIconMapping = {
   "DataFile": faTable,
   "Sheet": faFile,
   "Label": null,
@@ -15,7 +16,7 @@ const nodeToIconMapping={
   "Annotation": faColumns,
   "Wikifier": faList,
   "Entity": faProjectDiagram,
-  };
+};
 
 export interface NodeProps {
   id: string;
@@ -24,12 +25,14 @@ export interface NodeProps {
   childNodes: NodeProps[];
   type: NodeType;
   bolded?: boolean;
-  onClick: (node: NodeProps) => void,
-  rightClick: (node:NodeProps) => any,
+  onClick?: (node: NodeProps) => void,
+  rightClick?: (node: NodeProps) => any,
+  onDrop?: (files: File[], node: NodeProps) => void
 }
 
 interface NodeState {
   expanded: boolean;
+  highlighted: boolean;
 }
 
 class FileNode extends Component<NodeProps, NodeState> {
@@ -37,7 +40,8 @@ class FileNode extends Component<NodeProps, NodeState> {
   constructor(props: NodeProps) {
     super(props);
     this.state = {
-      expanded: props.type=="Label" || props.bolded==true
+      expanded: props.type == "Label" || props.bolded == true,
+      highlighted: false
     }
   }
 
@@ -53,15 +57,35 @@ class FileNode extends Component<NodeProps, NodeState> {
 
   async onNodeClick() {
     this.setState({ expanded: true });
-    this.props.onClick(this.props);
+    if (this.props.onClick) {
+      this.props.onClick(this.props);
+    }
   }
 
-  onRightClick(event: any){
-      event.preventDefault();
+  onRightClick(event: any) {
+    event.preventDefault();
+    if (this.props.rightClick) {
       this.props.rightClick(this.props);
+    }
   }
+
+  onDrop(files: File[]) {
+    if (this.props.onDrop) {
+      this.props.onDrop(files, this.props);
+    }
+    this.setState({ highlighted: false })
+  }
+
+  onDragEnter() {
+    this.setState({ highlighted: true, expanded: true  })
+  }
+
+  onDragLeave() {
+    this.setState({ highlighted: false })
+  }
+
   render() {
-    let childrenNodes = null;
+    let childrenNodes = null as any; //needed because of dropzone for some reason?
     if (this.props.childNodes.length && this.state.expanded) {
       childrenNodes = (<ul>
         {this.props.childNodes.map((n: NodeProps) =>
@@ -73,7 +97,8 @@ class FileNode extends Component<NodeProps, NodeState> {
             parentNode={n.parentNode}
             type={n.type}
             rightClick={n.rightClick}
-            onClick={n.onClick} />)}
+            onClick={n.onClick}
+            onDrop={n.onDrop}/>)}
       </ul>)
     }
 
@@ -86,7 +111,7 @@ class FileNode extends Component<NodeProps, NodeState> {
       }
     }
 
-    let typeIcon = null;
+    let typeIcon = null as any; //needed becaise of dropzone for some reason?
     if (nodeToIconMapping[this.props.type]) {
       typeIcon = <FontAwesomeIcon icon={nodeToIconMapping[this.props.type] as IconDefinition} size="xs" />
     }
@@ -99,18 +124,28 @@ class FileNode extends Component<NodeProps, NodeState> {
       </Tooltip>
     );
 
-    return (
-      <li>
-        <OverlayTrigger overlay={logoTooltipHtml} delay={{show: 1000, hide: 0}} placement="top" trigger={["hover", "focus"]}>
-          <label className="pointer ellipsis"
-            onContextMenu={(e) => this.onRightClick(e)}
+    const backgroundStyle = this.state.highlighted ? {"background":"green"}:{};
 
-            >
-            {arrowIcon} <span onClick={() => this.onNodeClick()}>{typeIcon} {labelText}</span>
-          </label>
-        </OverlayTrigger>
-        {childrenNodes}
-      </li>
+
+    return (
+      <Dropzone
+        onDrop={(files) => this.onDrop(files)}
+        noDragEventsBubbling={true}
+        onDragEnter={() => (this.onDragEnter())}
+        onDragLeave={() => (this.onDragLeave())}>
+        {({ getRootProps, getInputProps }) =>
+        (
+          <li  {...getRootProps({ className: 'dropzone' })} style={backgroundStyle}>
+            <OverlayTrigger overlay={logoTooltipHtml} delay={{ show: 1000, hide: 0 }} placement="top" trigger={["hover", "focus"]}>
+              <label className="pointer ellipsis"
+                onContextMenu={(e) => this.onRightClick(e)}
+              >
+                {arrowIcon} <span onClick={() => this.onNodeClick()}>{typeIcon} {labelText}</span>
+              </label>
+            </OverlayTrigger>
+            {childrenNodes}
+          </li>)}
+      </Dropzone>
     )
   }
 }

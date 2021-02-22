@@ -277,6 +277,11 @@ class FileTree extends Component<TreeProps, TreeState> {
     menu.popup({ window: remote.getCurrentWindow() });
   }
 
+  onDrop(files:File[], node:NodeProps){
+    alert(files[0].name+"dropped onto "+node.label)
+    console.log(files, node)
+  }
+
 
   buildSubFileTree(projDict: any, df: string, sheetName: string, type: NodeType, parentNode: NodeProps) {
     if (!projDict[df] || !projDict[df][sheetName]) {
@@ -292,7 +297,7 @@ class FileTree extends Component<TreeProps, TreeState> {
           parentNode: parentNode,
           rightClick: (node: NodeProps) => this.onRightClick(node),
           onClick: (node: NodeProps) => this.changeFile(node),
-          //because yaml ends in .yaml and annotation in .json, we can check both simultaneously?
+          //because yaml ends in .yaml and annotation in .json/.annotation, we can check both simultaneously?
           bolded: currentFilesService.currentState.mappingFile == filename
         }
       )
@@ -324,6 +329,7 @@ class FileTree extends Component<TreeProps, TreeState> {
           parentNode: dataNode,
           rightClick: (node: NodeProps) => this.onRightClick(node),
           onClick: (node: NodeProps) => this.changeFile(node),
+          onDrop: (files, node) => this.onDrop(files, node),
           bolded: currentFilesService.currentState.sheetName == sheetName
         } as NodeProps;
         this.buildSubFileTree(project.annotations, df, sheetName, "Annotation", sheetNode)
@@ -393,7 +399,8 @@ class FileTree extends Component<TreeProps, TreeState> {
               type={fileNode.type}
               parentNode={fileNode.parentNode}
               rightClick={fileNode.rightClick}
-              onClick={fileNode.onClick} />
+              onClick={fileNode.onClick}
+              onDrop={fileNode.onDrop}/>
           ))}
 
         </ul>
