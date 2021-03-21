@@ -223,9 +223,15 @@ class TableContainer extends Component<{}, TableState> {
   async fetchAnnotations() {
     if (!currentFilesService.currentState.mappingFile){
       //create a mapping file
-      const title = path.join("annotations", path.parse(currentFilesService.currentState.dataFile).name+"-"+currentFilesService.currentState.sheetName+".annotation");
+      let title=""
+      if (path.parse(currentFilesService.currentState.dataFile).base == currentFilesService.currentState.sheetName){
+        title = path.join("af", path.parse(currentFilesService.currentState.dataFile).name);
+      }else{
+      title = path.join("af", path.parse(currentFilesService.currentState.dataFile).name+"-"+currentFilesService.currentState.sheetName+".annotation");
+      }
+
       const data = {
-        "title":title,
+        "title": title,
         "sheetName": currentFilesService.currentState.sheetName,
         "dataFile": currentFilesService.currentState.dataFile
       };

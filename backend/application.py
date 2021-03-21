@@ -181,12 +181,12 @@ def upload_data_file():
     project = get_project()
 
     file_path = file_upload_validator({'.xlsx', '.xls', '.csv', '.tsv'})
-    data_file = project.add_data_file(file_path, copy_from_elsewhere=True, overwrite=True)
+    data_file = project.add_data_file(file_path, overwrite=True)
     project.save()
     response = dict(project=get_project_dict(project))
     sheet_name = project.data_files[data_file]["val_arr"][0]
 
-    annotations_dir = os.path.join(project.directory, "annotations")
+    annotations_dir = os.path.join(project.directory, "af")
     if not os.path.isdir(annotations_dir):
         os.mkdir(annotations_dir)
     annotations_path = os.path.join(annotations_dir, Path(
@@ -208,8 +208,7 @@ def upload_entities():
     project = get_project()
 
     file_path = file_upload_validator({".tsv"})
-    project.add_entity_file(
-        file_path, copy_from_elsewhere=True, overwrite=True)
+    project.add_entity_file(file_path,  overwrite=True)
     project.save()
 
     entities_stats = add_entities_from_file(file_path)
@@ -249,8 +248,7 @@ def upload_wikifier_output():
     project = get_project()
 
     file_path = file_upload_validator({".csv"})
-    file_path = project.add_wikifier_file(
-        file_path, copy_from_elsewhere=True, overwrite=True)
+    file_path = project.add_wikifier_file(file_path,  overwrite=True)
     project.save()
 
     response = dict(project=get_project_dict(project))
@@ -275,8 +273,7 @@ def call_wikifier_service():
     cell_qnode_map, problem_cells = wikify(calc_params, region, context)
     file_path = save_dataframe(
         project, cell_qnode_map, "wikify_region_output.csv")
-    file_path = project.add_wikifier_file(
-        file_path,  copy_from_elsewhere=True, overwrite=True)
+    file_path = project.add_wikifier_file(file_path, overwrite=True)
     project.save()
 
     calc_params = get_calc_params(project)

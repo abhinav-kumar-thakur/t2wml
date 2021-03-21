@@ -147,7 +147,7 @@ class FileTree extends Component<TreeProps, TreeState> {
   async addYaml(clickedNode: NodeProps) {
     const result = await remote.dialog.showSaveDialog({
       title: "Add Empty Yaml File",
-      defaultPath: wikiStore.project.projectDTO!.directory,
+      defaultPath: path.join(wikiStore.project.projectDTO!.directory, "yf"),
       properties: ['createDirectory'],
       filters: [
         { name: "Yaml", extensions: ["yaml"] }
@@ -175,7 +175,7 @@ class FileTree extends Component<TreeProps, TreeState> {
   async addAnnotation(clickedNode: NodeProps) {
     const result = await remote.dialog.showSaveDialog({
       title: "Add Empty Annotation File",
-      defaultPath: wikiStore.project.projectDTO!.directory,
+      defaultPath: path.join(wikiStore.project.projectDTO!.directory, "af"),
       properties: ['createDirectory'],
       filters: [
         { name: "annotation", extensions: ["annotation", "json"] }
