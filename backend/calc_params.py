@@ -5,7 +5,7 @@ from caching import CacheHolder
 
 
 class CalcParams:
-    def __init__(self, project, data_path, sheet_name, yaml_path=None, annotation_path=None):
+    def __init__(self, project, data_path, sheet_name, yaml_path=None, annotation_path=None, start=0, end=None):
         self.project_path = project.directory
         self.data_path = Path(project.directory) / data_path
         self.sheet_name = sheet_name
@@ -15,6 +15,8 @@ class CalcParams:
         self.annotation_path = annotation_path or ""
         if annotation_path:
             self.annotation_path= Path(project.directory) / annotation_path
+        self.start=start
+        self.end=end
 
 
     @property
@@ -28,6 +30,7 @@ class CalcParams:
     @property
     def cache(self):
         return None #we are getting rid of caching until we've figured out a better way of determining when a project has changed
+        #we also need to handle the indexing of the statements if we ever add back caching
         if self.yaml_path:
             return CacheHolder(self.project, self.data_path, self.sheet_name, self.yaml_path)
 

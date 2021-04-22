@@ -100,7 +100,14 @@ def get_calc_params(project, data_required=True, mapping_type=None, mapping_file
             return None
 
     add_entities_from_project(project)
-    calc_params = CalcParams(project, data_file, sheet_name)
+
+    start=int(request.args.get("start_index", 0))
+    end=request.args.get("end_index", None)
+    if end is not None:
+        end=int(end)
+
+
+    calc_params = CalcParams(project, data_file, sheet_name, start=start, end=end)
 
     mapping_type = mapping_type or request.args.get("mapping_type")
     mapping_file = mapping_file or request.args.get("mapping_file")

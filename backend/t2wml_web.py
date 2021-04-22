@@ -77,7 +77,7 @@ def get_kg(calc_params):
         ang.preload(calc_params.sheet, wikifier)
     else:
         cell_mapper = YamlMapper(calc_params.yaml_path)
-    kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, wikifier)
+    kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, wikifier, calc_params.start, calc_params.end)
     db.session.commit()  # save any queried properties
     return kg
 
@@ -364,8 +364,8 @@ def get_partial_csv(calc_params):
     wikifier=calc_params.wikifier
     annotation= calc_params.annotation_path
     cell_mapper = PartialAnnotationMapper(calc_params.annotation_path)
-    kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, wikifier)
-    columns, dict_values=get_cells_and_columns(kg.statements)
+    kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, wikifier, calc_params.start, calc_params.end)
+    columns, dict_values=get_cells_and_columns(kg.statements)#, calc_params.project)
     df = pd.DataFrame.from_dict(dict_values)
     df.replace(to_replace=[None], value="", inplace=True)
     dims = list(df.shape)

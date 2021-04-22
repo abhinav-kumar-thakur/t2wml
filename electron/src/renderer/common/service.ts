@@ -53,6 +53,9 @@ class RequestService {
       url += `&mapping_file=${currentFilesService.currentState.mappingFile}`;
       url += `&mapping_type=${currentFilesService.currentState.mappingType}`;
     }
+    //const startInd=1;
+    //const endInd=9;
+    //url += `&start_index=${startInd}&end_index=${endInd}`;
     return url;
   }
 
