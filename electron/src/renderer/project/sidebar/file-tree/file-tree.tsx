@@ -69,6 +69,7 @@ class FileTree extends Component<TreeProps, TreeState> {
     finally{
       wikiStore.wikifier.showSpinner = false;
     }
+    this.requestService.getStatements()
   }
 
   async changeDataFile(dataFile: string) {

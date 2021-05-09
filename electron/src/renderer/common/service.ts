@@ -92,7 +92,9 @@ class RequestService {
   public fillTable(response: ResponseWithTableDTO) {
     wikiStore.table.updateTable(response.table);
     wikiStore.project.projectDTO = response.project; //?
+    wikiStore.layers.updateFromDTO(response.layers);
   }
+
 
   @action
   public updateProjectandQnode(response: ResponseWithQNodeLayerDTO) {
@@ -229,7 +231,15 @@ class RequestService {
   public async getTable() {
     const updater = currentFilesService.createUpdater();
     const response = await backendGet(`/table?${this.getMappingParams()}`) as ResponseWithTableDTO;
-    updater.update(() => wikiStore.table.updateTable(response.table), "getTable");
+    updater.update(() => this.fillTable(response), "getTable");
+  }
+
+  public async getStatements() {
+    const updater = currentFilesService.createUpdater();
+    const start_row=0;
+    const limit="";
+    const response = await backendGet(`statements/${start_row}/${limit}?${this.getMappingParams()}`) as ResponseWithMappingDTO;
+    updater.update(() => this.fillMapping(response), "getStatements");
   }
 
   public async getMappingCalculation() {

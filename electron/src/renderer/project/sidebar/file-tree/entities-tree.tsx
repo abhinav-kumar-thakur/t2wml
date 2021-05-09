@@ -80,6 +80,7 @@ class EntitiesTree extends Component<TreeProps, TreeState> {
     finally{
       wikiStore.wikifier.showSpinner = false;
     }
+    this.requestService.getStatements()
   }
 
   async changeFile() {

@@ -99,6 +99,8 @@ class Sidebar extends Component<{}, SidebarState> {
         finally{
         wikiStore.wikifier.showSpinner = false;
         }
+
+        this.requestService.getStatements()
     }
 
     getFilesData() {

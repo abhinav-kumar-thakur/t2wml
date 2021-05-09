@@ -151,6 +151,8 @@ class Project extends Component<ProjectProps, ProjectState> {
       finally {
         wikiStore.wikifier.showSpinner = false;
       }
+
+      this.requestService.getStatements()
     }
 
   }

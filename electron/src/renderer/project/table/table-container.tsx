@@ -187,6 +187,7 @@ class TableContainer extends Component<{}, TableState> {
       wikiStore.wikifier.showSpinner = false;
     }
     wikiStore.table.showSpinner = false;
+    this.requestService.getStatements()
 
   }
 

@@ -129,15 +129,6 @@ def get_statements(start_row=0, limit=None):
     get_layers(response, calc_params)
     return response, 200
 
-@app.route('/api/qnodes', methods=['GET'])
-@json_response
-def get_qnodes():
-    project = get_project()
-    calc_params = get_calc_params(project)
-    response=dict()
-    response["layers"] = get_qnodes_layer(calc_params)
-    return response, 200
-
 
 @app.route('/api/mapping', methods=['GET'])
 @json_response
@@ -168,6 +159,9 @@ def get_data():
     calc_params = get_calc_params(project)
     response = dict()
     response["table"] = get_table(calc_params)
+    response["layers"] = get_qnodes_layer(calc_params)
+    mapping_response, code=get_mapping()
+    response.update(mapping_response)
     return response, 200
 
 @app.route('/api/partialcsv', methods=['GET'])
