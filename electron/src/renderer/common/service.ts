@@ -91,7 +91,7 @@ class RequestService {
   @action
   public fillTable(response: ResponseWithTableDTO) {
     wikiStore.table.updateTable(response.table);
-    this.fillMapping(response);
+    wikiStore.project.projectDTO = response.project; //?
   }
 
   @action
@@ -168,13 +168,13 @@ class RequestService {
     return response.filename;
   }
 
-  public async postAnnotationBlocks(data: any) {
+  public async putAnnotationBlocks(data: any) {
     const updater = currentFilesService.createUpdater();
-    const response = await backendPost(`/annotation?${this.getDataFileParams()}`, data) as ResponseWithProjectAndMappingDTO;
+    const response = await backendPut(`/annotation?${this.getMappingParams()}`, data) as ResponseWithAnnotationsDTO;
     updater.update(() => {
-      wikiStore.project.projectDTO = response.project;
-      this.fillMapping(response);
-    }, "postAnnotationBlocks")
+      wikiStore.annotations.blocks = response.annotations || [];
+      wikiStore.yaml.yamlContent = response.yamlContent;
+    }, "putAnnotationBlocks")
   }
 
   public async getAnnotationSuggestions(data: any): Promise<ResponseWithSuggestion> {
@@ -226,11 +226,10 @@ class RequestService {
       wikiStore.wikifier.wikifierError = response.wikifierError; })
   }
 
-
   public async getTable() {
     const updater = currentFilesService.createUpdater();
     const response = await backendGet(`/table?${this.getMappingParams()}`) as ResponseWithTableDTO;
-    updater.update(() => this.fillTable(response), "getTable");
+    updater.update(() => wikiStore.table.updateTable(response.table), "getTable");
   }
 
   public async getMappingCalculation() {

@@ -133,7 +133,7 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
     wikiStore.table.showSpinner=true;
     try {
       await this.requestService.call(this, () => (
-        this.requestService.postAnnotationBlocks(
+        this.requestService.putAnnotationBlocks(
           {'annotations': annotations, "title":currentFilesService.currentState.mappingFile}
         )
       ));

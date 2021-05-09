@@ -4,6 +4,7 @@ import sys
 import requests
 from pathlib import Path
 from flask import request
+from t2wml.utils.t2wml_exceptions import T2WMLException
 import web_exceptions
 from app_config import app
 from werkzeug.utils import secure_filename
@@ -119,6 +120,24 @@ def get_project_files():
     response = dict(project=get_project_dict(project))
     return response, 200
 
+@app.route('/api/statements/<start_row>/<limit>', methods=['GET'])
+@json_response
+def get_statements(start_row=0, limit=None):
+    project = get_project()
+    calc_params = get_calc_params(project)
+    response=dict()
+    get_layers(response, calc_params)
+    return response, 200
+
+@app.route('/api/qnodes', methods=['GET'])
+@json_response
+def get_qnodes():
+    project = get_project()
+    calc_params = get_calc_params(project)
+    response=dict()
+    response["layers"] = get_qnodes_layer(calc_params)
+    return response, 200
+
 
 @app.route('/api/mapping', methods=['GET'])
 @json_response
@@ -128,16 +147,13 @@ def get_mapping(mapping_file=None, mapping_type=None):
     # if redirecting from a save:
     update_calc_params_mapping_files(
         project, calc_params, mapping_file, mapping_type)
-
     response = dict(project=get_project_dict(project))
-
     if calc_params.yaml_path:
         response["yamlContent"] = get_yaml_content(calc_params)
         response["annotations"] = []
     else:
         response["annotations"], response["yamlContent"] = get_annotations(
             calc_params)
-    get_layers(response, calc_params)
     return response, 200
 
 
@@ -152,9 +168,7 @@ def get_data():
     calc_params = get_calc_params(project)
     response = dict()
     response["table"] = get_table(calc_params)
-    calc_response, code = get_mapping()
-    response.update(calc_response)
-    return response, code
+    return response, 200
 
 @app.route('/api/partialcsv', methods=['GET'])
 @json_response
@@ -415,20 +429,20 @@ def save_annotation():
     return response, 200
 
 
-@app.route('/api/annotation', methods=['POST'])
+@app.route('/api/annotation', methods=['PUT'])
 @json_response
 def upload_annotation():
     project = get_project()
     calc_params = get_calc_params(project)
-    title = request.get_json()["title"]
     annotation = request.get_json()["annotations"]
-    annotations_path = Path(project.directory) / title
-    save_annotations(project, annotation, annotations_path,
+    if not calc_params.annotation_path:
+        raise web_exceptions.InvalidRequestException("Attempting to save annotation file without mapping file parameter")
+    save_annotations(project, annotation, calc_params.annotation_path,
                      calc_params.data_path, calc_params.sheet_name)
     response = dict(project=get_project_dict(project))
-    calc_response, code = get_mapping(annotations_path, "Annotation")
-    response.update(calc_response)
-    return response, code
+    response["annotations"], response["yamlContent"] = get_annotations(
+            calc_params)
+    return response, 200
 
 
 @app.route('/api/annotation/suggest', methods=['PUT'])
