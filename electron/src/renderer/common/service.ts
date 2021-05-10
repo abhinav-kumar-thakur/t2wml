@@ -237,8 +237,8 @@ class RequestService {
   public async getStatements() {
     const updater = currentFilesService.createUpdater();
     const start_row=0;
-    const limit="";
-    const response = await backendGet(`statements/${start_row}/${limit}?${this.getMappingParams()}`) as ResponseWithMappingDTO;
+    const limit=100;
+    const response = await backendGet(`statements?${this.getMappingParams()}&start_row=${start_row}`) as ResponseWithMappingDTO;
     updater.update(() => this.fillMapping(response), "getStatements");
   }
 

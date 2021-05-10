@@ -120,9 +120,9 @@ def get_project_files():
     response = dict(project=get_project_dict(project))
     return response, 200
 
-@app.route('/api/statements/<start_row>/<limit>', methods=['GET'])
+@app.route('/api/statements', methods=['GET'])
 @json_response
-def get_statements(start_row=0, limit=None):
+def get_statements():
     project = get_project()
     calc_params = get_calc_params(project)
     response=dict()
