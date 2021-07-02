@@ -43,7 +43,7 @@ def set_web_settings():
     web_logger.debug("finished set web settings")
     try:
         web_logger.debug("trying to get p585")
-        prop=t2wml_settings.wikidata_provider.try_get_property_type("P585"))
+        prop=t2wml_settings.wikidata_provider.try_get_property_type("P585")
         web_logger.debug("Success!", prop)
     except Exception as e:
         web_logger.debug("failed to get p585", str(e))
